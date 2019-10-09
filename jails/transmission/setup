@@ -66,11 +66,7 @@ cp "$ABS_DIR"/vpn/forward_port "$VPN_DIR" && \
 		nohup bash /settings/vpn/forward_port &
 	EOF
 
-awk '{
-		printf "%s\n", $0
-	} END {
-		print "script-security 2" "\n" "up /settings/vpn/up"
-	}' \
+awk '{ printf "%s\n", $0 } END { print "script-security 2" "\n" "up /settings/vpn/up" }' \
 	< "$ABS_DIR"/vpn/default.ovpn \
 	> "$VPN_DIR"/default.ovpn
 
