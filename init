@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+zfs create -o recordsize=16K tank/apps
+
 for jail in jails/*/setup; do
 	bash "$jail" -H || break
 done
