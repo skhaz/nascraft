@@ -8,7 +8,7 @@ JAIL_IP=192.168.1.10 && \
 # shellcheck source=/dev/null
 . jails/base
 
-if [[ -f "$ABS_DIR"/vpn/default.ovpn && -f "$ABS_DIR"/vpn/default.auth ]]; then
+if [[ ! -f "$ABS_DIR"/vpn/default.ovpn && ! -f "$ABS_DIR"/vpn/default.auth ]]; then
 	echo "you need to provide the openvpn's configuration and authentication files."
 	exit 0
 fi
