@@ -89,8 +89,7 @@ sed "s/JAIL_IP/$JAIL_IP/g; s/VPN_IP/$VPN_IP/g" < "$ABS_DIR"/ipfw/rules > "$IPFW_
 jq . < "$ABS_DIR"/transmission/settings.json > "$SETTINGS_PATH"/transmission/settings.json
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-	chgrp -R media /settings /mnt/media
-	chown -R transmission /settings
+	chown -R transmission:media /settings /mnt/media
 	chown 0:0 /settings/ipfw/rules
 	chmod 600 /settings/ipfw/rules
 	chmod +x /settings/vpn/up
