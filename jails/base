@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+export INTERFACE="vnet0"
+export VNET="on"
+export ROUTER="192.168.1.1"
+export BOOT="on"
+
+RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g") && \
+	export RELEASE
+
+JAIL_NAME=$(basename "$(cd "$(dirname "$0")" || exit; pwd -P)") && \
+	export JAIL_NAME

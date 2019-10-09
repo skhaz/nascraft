@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+for jail in jails/*/setup; do
+	bash "$jail" -H || break
+done

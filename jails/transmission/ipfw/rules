@@ -1,0 +1,12 @@
+# allow internal traffic
+add 03000 allow IP from JAIL_IP/24 to 192.168.1.0/24 keep-state
+add 03000 allow IP from 192.168.1.0/24 to JAIL_IP/24 keep-state
+
+# allow access to Entrace IP for VPN
+add 04000 allow IP from JAIL_IP to VPN_IP keep-state
+
+# allow any traffic over the VPN interface
+add 05000 allow IP from any to any via tun*
+
+# deny any other traffic
+add 65534 deny IP from any to any

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
