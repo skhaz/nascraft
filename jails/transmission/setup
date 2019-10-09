@@ -52,8 +52,7 @@ iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
 # shellcheck disable=SC2016
 find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
-	| xargs -0 -I@ bash -c \
-		"iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
+	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
 
 iocage exec "$JAIL_NAME" mkdir /settings/{ipfw,vpn,transmission}
 
