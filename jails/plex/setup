@@ -2,3 +2,45 @@
 
 # shellcheck source=/dev/null
 . jails/base
+
+set -x
+
+JAIL_IP=192.168.1.10 && \
+	export JAIL_IP
+
+zfs create tank/apps/"$JAIL_NAME"
+
+cat <<EOF >/tmp/pkglist.json
+{
+  "pkgs": [
+    "plexmediaserver"
+  ]
+}
+EOF
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
+  vnet="$VNET" \
+  boot="$BOOT" \
+  defaultrouter="$ROUTER" \
+  ip4_addr="$INTERFACE|$JAIL_IP/24"
+
+rm -f /tmp/pkglist.json
+
+iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
+iocage exec "$JAIL_NAME" pw groupmod media -m plex
+iocage exec "$JAIL_NAME" mkdir -p /settings /mnt/media/{movies,music,series}
+
+iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
+
+# shellcheck disable=SC2016
+find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
+	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
+
+cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+  chgrp -R media /settings /mnt/media
+  chown -R plex /settings
+  sysrc plexmediaserver_enable=YES
+  sysrc plexmediaserver_user=plex
+  sysrc plexmediaserver_support_path="/settings"
+  service plexmediaserver start
+EOF
