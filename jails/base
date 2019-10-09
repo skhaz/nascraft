@@ -11,5 +11,8 @@ RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g") && \
 JAIL_NAME=$(basename "$(cd "$(dirname "$0")" || exit; pwd -P)") && \
 	export JAIL_NAME
 
+SETTINGS_PATH=/mnt/tank/apps/"$JAIL_NAME" && \
+	export SETTINGS_PATH
+
 ABS_DIR=$(cd "$(dirname "$0")" || exit; pwd -P) && \
 	export ABS_DIR

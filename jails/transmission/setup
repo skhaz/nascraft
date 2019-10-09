@@ -42,8 +42,6 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 
 rm -f /tmp/pkglist.json
 
-SETTINGS_PATH=/mnt/tank/apps/"$JAIL_NAME"
-
 iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
 	python3.6 -Im ensurepip --upgrade --default-pip
 
