@@ -17,7 +17,7 @@ cat <<EOF >/tmp/pkglist.json
 		"py36-sqlite3",
 		"py36-pycryptodome",
 		"py36-openssl"
-  ]
+	]
 }
 EOF
 
@@ -35,3 +35,4 @@ iocage exec "$JAIL_NAME" pip install gphotos-sync
 iocage exec "$JAIL_NAME" mkdir /settings
 iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
+
