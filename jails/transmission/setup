@@ -41,8 +41,10 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 
 rm -f /tmp/pkglist.json
 
-iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
-iocage exec "$JAIL_NAME" pw groupmod media -m transmission
+iocage exec "$JAIL_NAME" "pw groupadd -g "$(id -g media)" -n media"
+iocage exec "$JAIL_NAME" "pw user add media -c media -u "$(id -u media)" -d /nonexistent -s /usr/bin/nologin"
+iocage exec "$JAIL_NAME" "pw groupmod media -m transmission"
+
 iocage exec "$JAIL_NAME" mkdir -p /settings /mnt/media/{movies,music,series}
 
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
@@ -85,7 +87,8 @@ sed "s/JAIL_IP/$JAIL_IP/g; s/VPN_IP/$VPN_IP/g" < "$ABS_DIR"/ipfw/rules > "$IPFW_
 jq . < "$ABS_DIR"/transmission/settings.json > "$SETTINGS_PATH"/transmission/settings.json
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-	chown -R transmission:media /settings /mnt/media
+	chown -R transmission:transmission /settings
+	chown -R media:media /mnt/media
 	chown 0:0 /settings/ipfw/rules
 	chmod 600 /settings/ipfw/rules
 	chmod +x /settings/vpn/up
