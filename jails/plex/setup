@@ -37,7 +37,7 @@ find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
 	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-  chgrp -R /mnt/media
+  chgrp -R media /mnt/media
   chown -R plex:plex /settings
   sysrc plexmediaserver_enable=YES
   sysrc plexmediaserver_user=plex
