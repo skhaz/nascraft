@@ -22,12 +22,11 @@ cat <<EOF >/tmp/pkglist.json
 	"pkgs": [
 		"bash",
 		"wget",
-		"jq",
 		"transmission-web",
 		"transmission-daemon",
 		"transmission-cli",
 		"openvpn",
-		"python36"
+		"jq"
 	]
 }
 EOF
@@ -41,9 +40,6 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	allow_tun="1"
 
 rm -f /tmp/pkglist.json
-
-iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
-	python3.6 -Im ensurepip --upgrade --default-pip
 
 iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
 iocage exec "$JAIL_NAME" pw groupmod media -m transmission
