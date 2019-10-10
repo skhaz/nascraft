@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+set -x
+
+JAIL_IP=192.168.1.30 && \
+	export JAIL_IP
+
+zfs create tank/apps/"$JAIL_NAME"
+
+cat <<EOF >/tmp/pkglist.json
+{
+	"pkgs": [
+		"python36",
+		"py36-sqlite3",
+		"py36-pycryptodome",
+		"py36-openssl"
+  ]
+}
+EOF
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	ip4_addr="$INTERFACE|$JAIL_IP/24"
+
+rm -f /tmp/pkglist.json
+
+iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
+	python3.6 -Im ensurepip --upgrade --default-pip
+iocage exec "$JAIL_NAME" pip install gphotos-sync
+iocage exec "$JAIL_NAME" mkdir /settings
+iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
+iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
