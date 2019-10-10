@@ -18,4 +18,4 @@ declare -A params=(
 
 JSON=$(wget -q --post-data="$(for key in "${!params[@]}"; do echo -n "$key=${params[${key}]}&"; done)" -O - $API)
 
-transmission-remote 127.0.0.1 -p "$(echo $JSON | jq .port)"
+transmission-remote 127.0.0.1 -p "$(echo "$JSON" | jq .port)"
