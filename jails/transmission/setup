@@ -17,7 +17,7 @@ devfs rule -s 4 add path 'tun*' unhide
 
 zfs create tank/apps/"$JAIL_NAME"
 
-cat <<EOF >/tmp/pkglist.json
+cat <<-EOF >/tmp/pkglist.json
 {
 	"pkgs": [
 		"bash",
@@ -41,7 +41,7 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 
 rm -f /tmp/pkglist.json
 
-iocage exec "$JAIL_NAME" "pw groupadd -g "$(id -g media)" -n media"
+iocage exec "$JAIL_NAME" "pw groupadd -g "$(getent group media | cut -d: -f3)" -n media"
 iocage exec "$JAIL_NAME" "pw user add media -c media -u "$(id -u media)" -d /nonexistent -s /usr/bin/nologin"
 iocage exec "$JAIL_NAME" "pw groupmod media -m transmission"
 
