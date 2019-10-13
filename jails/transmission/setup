@@ -102,6 +102,7 @@ cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	sysrc transmission_user=media
 	sysrc transmission_conf_dir=/settings/transmission
 	sysrc transmission_download_dir=/mnt/media
+	(crontab -l ; echo '@hourly /settings/vpn/forward_port') | sort - | uniq - | crontab -
 	service ipfw start
 	service openvpn start
 	service transmission start
