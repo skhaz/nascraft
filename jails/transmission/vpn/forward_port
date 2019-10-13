@@ -2,6 +2,12 @@
 
 set -e
 
+shopt -s nocasematch
+
+if [[ $(transmission-remote -pt) =~ yes ]]; then
+	exit 0
+fi
+
 API=privateinternetaccess.com/vpninfo/port_forward_assignment &&
 	export API
 
