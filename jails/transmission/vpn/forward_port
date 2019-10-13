@@ -4,7 +4,7 @@ set -e
 
 shopt -s nocasematch
 
-if [[ $(transmission-remote -pt) =~ yes ]]; then
+if [[ $(transmission-remote -pt 2>/dev/null) =~ yes ]]; then
 	exit 0
 fi
 
