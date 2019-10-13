@@ -64,6 +64,8 @@ cp "$ABS_DIR"/vpn/forward_port "$VPN_DIR" && \
 		nohup bash /settings/vpn/forward_port &
 	EOF
 
+iocage exec "$JAIL_NAME" "(crontab -l ; echo '@hourly /settings/vpn/forward_port') | sort - | uniq - | crontab -"
+
 awk '{ printf "%s\n", $0 } END { print "script-security 2" "\n" "up /settings/vpn/up" }' \
 	< "$ABS_DIR"/vpn/default.ovpn \
 	> "$VPN_DIR"/default.ovpn
@@ -102,7 +104,6 @@ cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	sysrc transmission_user=media
 	sysrc transmission_conf_dir=/settings/transmission
 	sysrc transmission_download_dir=/mnt/media
-	(crontab -l ; echo '@hourly /settings/vpn/forward_port') | sort - | uniq - | crontab -
 	service ipfw start
 	service openvpn start
 	service transmission start
