@@ -30,20 +30,19 @@ iocage exec "$JAIL_NAME" "mkdir -p /settings /usr/local/etc/rc.d"
 
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
-cp "$ABS_DIR/jackettrc" \
-	"/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/jackett"
-
-iocage exec "$JAIL_NAME" "ln -s /usr/local/bin/mono /usr/bin/mono"
-iocage exec "$JAIL_NAME" "fetch https://github.com/Jackett/Jackett/releases/download/v0.11.799/Jackett.Binaries.Mono.tar.gz -o /usr/local/share"
-iocage exec "$JAIL_NAME" "tar -xzvf /usr/local/share/Jackett.Binaries.Mono.tar.gz -C /usr/local/share"
-iocage exec "$JAIL_NAME" "rm /usr/local/share/Jackett.Binaries.Mono.tar.gz"
-iocage exec "$JAIL_NAME" "pw user add jackett -c jackett -d /nonexistent -s /usr/bin/nologin"
-iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
-iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
-iocage exec "$JAIL_NAME" "pw groupmod media -m jackett"
-iocage exec "$JAIL_NAME" "chown -R jackett:jackett /usr/local/share/Jackett /settings"
+awk 'BEGIN { print "#!/bin/sh" } { print }' < "$ABS_DIR/jackettrc" \
+	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/jackett"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+	ln -s /usr/local/bin/mono /usr/bin/mono
+	fetch https://github.com/Jackett/Jackett/releases/download/v0.11.799/Jackett.Binaries.Mono.tar.gz -o /usr/local/share
+	tar -xzvf /usr/local/share/Jackett.Binaries.Mono.tar.gz -C /usr/local/share
+	rm /usr/local/share/Jackett.Binaries.Mono.tar.gz
+	pw user add jackett -c jackett -d /nonexistent -s /usr/bin/nologin
+	pw groupadd -g $(getent group media | cut -d: -f3) -n media
+	pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin
+	pw groupmod media -m jackett
+	chown -R jackett:jackett /usr/local/share/Jackett /settings
 	chmod u+x /usr/local/etc/rc.d/jackett
 	sysrc jackett_enable=YES
 	sysrc jackett_user=media
