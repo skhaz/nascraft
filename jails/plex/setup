@@ -8,12 +8,12 @@ set -x
 JAIL_IP=192.168.1.20 && \
 	export JAIL_IP
 
-zfs create tank/apps/"$JAIL_NAME"
+zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
 
 cat <<EOF >/tmp/pkglist.json
 {
 	"pkgs": [
-		"plexmediaserver"
+		"plexmediaserver-plexpass"
 	]
 }
 EOF
@@ -39,8 +39,8 @@ find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	chgrp -R media /mnt/media
 	chown -R plex:plex /settings
-	sysrc plexmediaserver_enable=YES
-	sysrc plexmediaserver_user=plex
-	sysrc plexmediaserver_support_path="/settings"
-	service plexmediaserver start
+	sysrc plexmediaserver_plexpass_user=plex
+	sysrc plexmediaserver_plexpass_support_path="/settings"
+	sysrc plexmediaserver_plexpass_enable=YES
+	service plexmediaserver_plexpass start
 EOF
