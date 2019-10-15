@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 
-zfs create -o recordsize=16K tank/apps
+set -e
+
+zfs create tank/apps
+zfs set recordsize=16K tank/apps
+zfs set compression=on tank/apps
+
+zfs create tank/media
+zfs set compression=off tank/media
+zfs set recordsize=1M tank/media
+zfs create tank/media/movies
+zfs create tank/media/music
+zfs create tank/media/series
+find /mnt/tank/media -type d -print0 | xargs -0 -I % sh -c "chmod 664 %; chown media:media %"
+
+zfs create tank/backup
+zfs set compression=off tank/backup
+zfs set recordsize=1M tank/backup
 
 for jail in jails/*/setup; do
 	bash "$jail" -H || break
