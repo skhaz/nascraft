@@ -14,7 +14,7 @@ fi
 JAIL_IP=192.168.1.30 && \
 	export JAIL_IP
 
-zfs create tank/apps/"$JAIL_NAME"
+zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
 
 cat <<EOF >/tmp/pkglist.json
 {
@@ -42,21 +42,21 @@ iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group wheel | cut -d: -f3) -n 
 iocage exec "$JAIL_NAME" "pw user add backup -c backup -d /nonexistent -s /usr/bin/nologin"
 iocage exec "$JAIL_NAME" "pw groupmod wheel -m backup"
 
-cp "$ABS_DIR"/secret.json "$SETTINGS_PATH"
-
 LIBRARY_DIR=/mnt/tank/backup/library/photos && \
 	export LIBRARY_DIR
 
 LOCAL_LIBRARY=$(echo "$LIBRARY_DIR" | sed 's/tank\///')
 
-zfs create -p "$(echo $LIBRARY_DIR | sed 's/\/mnt\///')"
+zfs create -o recordsize=1M -o compression=off -p "$(echo $LIBRARY_DIR | sed 's/\/mnt\///')"
 
 iocage exec "$JAIL_NAME" "mkdir -p /settings $LOCAL_LIBRARY"
 iocage exec "$JAIL_NAME" "chgrp -R wheel $LOCAL_LIBRARY"
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH /settings nullfs rw 0 0"
 iocage fstab -a "$JAIL_NAME" "$LIBRARY_DIR $LOCAL_LIBRARY nullfs rw 0 0"
 
-cat <<-EOF >"$SETTINGS_PATH"/sync
+cp "$ABS_DIR/secret.json" "$SETTINGS_PATH/secret.json"
+
+cat <<-EOF >"$SETTINGS_PATH/sync"
 	#!/bin/sh
 
 	LANG=en_US.UTF-8 \
@@ -68,4 +68,5 @@ cat <<-EOF >"$SETTINGS_PATH"/sync
 EOF
 
 iocage exec "$JAIL_NAME" "chmod +x /settings/sync"
+iocage exec "$JAIL_NAME" "chmod go-rwx /settings/sync"
 iocage exec "$JAIL_NAME" "(crontab -l ; echo '@daily /settings/sync') | sort - | uniq - | crontab -"
