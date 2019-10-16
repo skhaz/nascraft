@@ -91,6 +91,7 @@ jq . < "$ABS_DIR"/transmission/settings.json > "$SETTINGS_PATH"/transmission/set
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	chown -R transmission:media /settings
 	chown -R media:media /mnt/media
+	chmod -R 770 /mnt/media
 	chown 0:0 /settings/ipfw/rules
 	chmod 600 /settings/ipfw/rules
 	chmod +x /settings/vpn/up

@@ -63,7 +63,7 @@
   "speed-limit-up-enabled": false,
   "start-added-torrents": true,
   "trash-original-torrent-files": false,
-  "umask": 0,
+  "umask": 2,
   "upload-slots-per-torrent": 8,
   "utp-enabled": true
 }
