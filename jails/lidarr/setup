@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+set -x
+
+JAIL_IP=192.168.1.30 && \
+	export JAIL_IP
+
+zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
+
+cat <<EOF >/tmp/pkglist.json
+{
+	"pkgs": [
+		"mono",
+		"mediainfo",
+		"chromaprint",
+		"sqlite3",
+		"ca_root_nss"
+	]
+}
+EOF
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	ip4_addr="$INTERFACE|$JAIL_IP/24"
+
+rm -f /tmp/pkglist.json
+
+iocage exec "$JAIL_NAME" "pw user add lidarr -c lidarr -u 353 -d /nonexistent -s /usr/bin/nologin"
+iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
+iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
+iocage exec "$JAIL_NAME" "pw groupmod media -m lidarr"
+iocage exec "$JAIL_NAME" "mkdir -p /settings /mnt/media/music /usr/local/etc/rc.d"
+iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH /settings nullfs rw 0 0"
+iocage fstab -a "$JAIL_NAME" "/mnt/tank/media/music /mnt/media/music nullfs rw 0 0"
+
+iocage exec "$JAIL_NAME" "ln -s /usr/local/bin/mono /usr/bin/mono"
+iocage exec "$JAIL_NAME" "fetch $(github_release lidarr lidarr 19989002) -o /usr/local/share"
+iocage exec "$JAIL_NAME" "tar -xzvf /usr/local/share/*.tar.gz -C /usr/local/share && rm /usr/local/share/*.tar.gz"
+
+awk 'BEGIN { print "#!/bin/sh" } { print }' \
+	< "$ABS_DIR/rc" \
+	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/lidarr"
+
+cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+	chgrp -R media /mnt/media /usr/local/share/Lidarr
+	chown -R lidarr:lidarr /settings
+	chmod u+x /usr/local/etc/rc.d/lidarr
+	sysrc lidarr_user=lidarr
+	sysrc lidarr_group=lidarr
+	sysrc lidarr_data_dir="/settings"
+	sysrc lidarr_enable=YES
+	service lidarr start
+EOF
+
