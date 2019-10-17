@@ -31,7 +31,7 @@ iocage exec "$JAIL_NAME" "mkdir -p /settings /usr/local/etc/rc.d"
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
 awk 'BEGIN { print "#!/bin/sh" } { print }' \
-	< "$ABS_DIR/jackettrc" \
+	< "$ABS_DIR/rc" \
 	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/jackett"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
