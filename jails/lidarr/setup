@@ -30,10 +30,6 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 
 rm -f /tmp/pkglist.json
 
-iocage exec "$JAIL_NAME" "pw user add lidarr -c lidarr -u 353 -d /nonexistent -s /usr/bin/nologin"
-iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
-iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
-iocage exec "$JAIL_NAME" "pw groupmod media -m lidarr"
 iocage exec "$JAIL_NAME" "mkdir -p /settings /mnt/media/music /usr/local/etc/rc.d"
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH /settings nullfs rw 0 0"
 iocage fstab -a "$JAIL_NAME" "/mnt/tank/media/music /mnt/media/music nullfs rw 0 0"
@@ -47,6 +43,10 @@ awk 'BEGIN { print "#!/bin/sh" } { print }' \
 	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/lidarr"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+	pw user add lidarr -c lidarr -u 353 -d /nonexistent -s /usr/bin/nologin
+	pw groupadd -g $(getent group media | cut -d: -f3) -n media
+	pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin
+	pw groupmod media -m lidarr
 	chgrp -R media /mnt/media /usr/local/share/Lidarr
 	chown -R lidarr:lidarr /settings
 	chmod u+x /usr/local/etc/rc.d/lidarr
