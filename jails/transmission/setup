@@ -43,8 +43,6 @@ rm -f /tmp/pkglist.json
 
 iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
 iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
-iocage exec "$JAIL_NAME" "pw groupmod media -m transmission"
-
 iocage exec "$JAIL_NAME" mkdir -p /settings /mnt/media/{movies,music,series}
 
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
@@ -70,7 +68,7 @@ awk '{ printf "%s\n", $0 } END { print "script-security 2" "\n" "up /settings/vp
 	< "$ABS_DIR"/vpn/default.ovpn \
 	> "$VPN_DIR"/default.ovpn
 
-VPN_IP=$(awk '$1 == "remote" {print $2}' < "$VPN_DIR"/default.ovpn) 
+VPN_IP=$(awk '$1 == "remote" {print $2}' < "$VPN_DIR"/default.ovpn)
 
 VPN_AUTH=$(awk '$1 == "auth-user-pass" {print $2}' < "$VPN_DIR"/default.ovpn) && \
 	export VPN_AUTH
@@ -89,7 +87,7 @@ sed "s/JAIL_IP/$JAIL_IP/g; s/VPN_IP/$VPN_IP/g" < "$ABS_DIR"/ipfw/rules > "$IPFW_
 jq . < "$ABS_DIR"/transmission/settings.json > "$SETTINGS_PATH"/transmission/settings.json
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-	chown -R transmission:media /settings
+	chown -R media:media /settings
 	chown -R media:media /mnt/media
 	chmod -R 770 /mnt/media
 	chown 0:0 /settings/ipfw/rules
