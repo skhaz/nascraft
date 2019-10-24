@@ -1,0 +1,27 @@
+#
+# PROVIDE: cloudflare
+# REQUIRE: networking
+# KEYWORD:
+
+. /etc/rc.subr
+
+name=cloudflare
+rcvar=${name}_enable
+load_rc_config $name
+
+: ${cloudflare_enable:="NO"}
+: ${cloudflare_user:="cloudflare"}
+: ${cloudflare_data_dir:="/settings/cloudflare"}
+: ${cloudflare_url:=""}
+: ${cloudflare_hostnane:=""}
+: ${cloudflare_cert:=""}
+
+pidfile="${cloudflare_data_dir}/cloudflare.pid"
+command="/usr/sbin/daemon"
+cloudflare_command="/usr/local/cloudflare/cloudflared tunnel --url ${cloudflare_url} --hostname ${cloudflare_hostname} --origincert ${cloudflare_cert}"
+command_args="-P ${pidfile} -r -f ${cloudflare_command}"
+
+load_rc_config $name
+: ${cloudflare_enable:=no}
+
+run_rc_command "$1"

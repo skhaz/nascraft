@@ -11,20 +11,16 @@ JAIL_IP=192.168.1.20 && \
 zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
 
 cat <<EOF >/tmp/pkglist.json
-{
-	"pkgs": [
-		"plexmediaserver-plexpass"
-	]
-}
+	{ "pkgs": [ "plexmediaserver-plexpass", "go", "devel/git" ] }
 EOF
+
+trap "rm /tmp/pkglist" EXIT
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	vnet="$VNET" \
 	boot="$BOOT" \
 	defaultrouter="$ROUTER" \
 	ip4_addr="$INTERFACE|$JAIL_IP/24"
-
-rm -f /tmp/pkglist.json
 
 iocage exec "$JAIL_NAME" pw groupadd -g "$(id -g media)" -n media
 iocage exec "$JAIL_NAME" pw groupmod media -m plex
@@ -36,7 +32,19 @@ iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
 	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
 
+awk 'BEGIN { print "#!/bin/sh" } { print }' \
+	< "$ABS_DIR/cloudflare/rc" \
+	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/cloudflare"
+
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+	go get -u github.com/cloudflare/cloudflared/cmd/cloudflared
+	cp /root/go/bin/cloudflared /usr/local/cloudflare/
+	pw useradd -n cloudflare -u 818 -d /nonexistent -s /usr/sbin/nologin
+	mkdir /usr/local/cloudflare /settings/cloudflare
+	chown cloudflare /usr/local/cloudflare /settings/cloudflare
+	chmod u+x /usr/local/etc/rc.d/cloudflare
+	sysrc cloudflare_user=cloudflare
+	sysrc cloudflare_enable=YES
 	chgrp -R media /mnt/media
 	chown -R plex:plex /settings
 	sysrc plexmediaserver_plexpass_user=plex
