@@ -9,6 +9,7 @@
 # lidarr_enable="YES"
 
 . /etc/rc.subr
+
 name=lidarr
 rcvar=${name}_enable
 load_rc_config $name
@@ -16,7 +17,7 @@ load_rc_config $name
 : ${lidarr_enable="NO"}
 : ${lidarr_user:="lidarr"}
 : ${lidarr_group:="lidarr"}
-: ${lidarr_data_dir:="/config"}
+: ${lidarr_data_dir:="/settings"}
 
 pidfile="${lidarr_data_dir}/lidarr.pid"
 command="/usr/sbin/daemon"
