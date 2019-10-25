@@ -14,7 +14,7 @@ cat <<EOF >/tmp/pkglist.json
 	{ "pkgs": [ "plexmediaserver-plexpass", "go", "devel/git" ] }
 EOF
 
-trap "rm /tmp/pkglist" EXIT
+trap "rm /tmp/pkglist.json" EXIT
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	vnet="$VNET" \

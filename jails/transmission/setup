@@ -31,6 +31,8 @@ cat <<-EOF >/tmp/pkglist.json
 }
 EOF
 
+trap "rm /tmp/pkglist.json" EXIT
+
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	vnet="$VNET" \
 	boot="$BOOT" \
@@ -38,8 +40,6 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	ip4_addr="$INTERFACE|$JAIL_IP/24" \
 	allow_raw_sockets="1" \
 	allow_tun="1"
-
-rm -f /tmp/pkglist.json
 
 iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
 iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"

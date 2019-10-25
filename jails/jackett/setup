@@ -11,20 +11,16 @@ JAIL_IP=192.168.1.70 && \
 zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
 
 cat <<EOF >/tmp/pkglist.json
-{
-	"pkgs": [
-		"mono"
-	]
-}
+{ "pkgs": ["mono"] }
 EOF
+
+trap "rm /tmp/pkglist.json" EXIT
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	vnet="$VNET" \
 	boot="$BOOT" \
 	defaultrouter="$ROUTER" \
 	ip4_addr="$INTERFACE|$JAIL_IP/24"
-
-rm -f /tmp/pkglist.json
 
 iocage exec "$JAIL_NAME" "mkdir -p /settings /usr/local/etc/rc.d"
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
