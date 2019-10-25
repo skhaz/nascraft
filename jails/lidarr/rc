@@ -1,12 +1,7 @@
 
-# $FreeBSD$
-#
 # PROVIDE: lidarr
-# REQUIRE: LOGIN
-# KEYWORD: shutdown
-#
-# Add the following lines to /etc/rc.conf to enable lidarr:
-# lidarr_enable="YES"
+# REQUIRE: networking
+# KEYWORD:
 
 . /etc/rc.subr
 
