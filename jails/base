@@ -21,8 +21,9 @@ github_release() {
 	local release="${3-latest}"
 
 	wget -qO - "https://api.github.com/repos/$1/$2/releases/$release" \
-		| grep "download_url.*.linux*" \
+		| grep "download_url.*" \
 		| cut -d : -f 2,3 \
-		| tr -d \"
+		| tr -d \" \
+		| awk "/freebsd/ || /linux/" \
+		| head -n 1
 }
-
