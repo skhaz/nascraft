@@ -10,11 +10,8 @@ JAIL_IP=192.168.1.70 && \
 
 zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
 
-cat <<EOF >/tmp/pkglist.json
-{ "pkgs": ["mono"] }
-EOF
-
-trap "rm /tmp/pkglist.json" EXIT
+echo '{ "pkgs": ["mono"] }' > "/tmp/pkglist.json" && \
+	trap "rm /tmp/pkglist.json" EXIT
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
 	vnet="$VNET" \

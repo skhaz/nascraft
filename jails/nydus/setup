@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+set -x
+
+JAIL_IP=192.168.1.60 && \
+	export JAIL_IP
+
+zfs create -o recordsize=64K tank/apps/"$JAIL_NAME"
+
+echo '{ "pkgs": [ "python36", "py36-sqlite3", "py36-openssl" }' > /tmp/pkglist.json && \
+	trap "rm /tmp/pkglist.json" EXIT
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	ip4_addr="$INTERFACE|$JAIL_IP/24"
+
+iocage exec "$JAIL_NAME" mkdir -p /settings
+
+iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
+
+iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
+	python3.6 -Im ensurepip --upgrade --default-pip
+iocage exec "$JAIL_NAME" pip install gphotos-sync
+iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/share"
+
+cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+EOF
+
