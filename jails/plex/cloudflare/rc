@@ -12,13 +12,12 @@ load_rc_config $name
 : ${cloudflare_enable:="NO"}
 : ${cloudflare_user:="cloudflare"}
 : ${cloudflare_data_dir:="/settings/cloudflare"}
-: ${cloudflare_url:=""}
-: ${cloudflare_hostnane:=""}
+: ${cloudflare_config:=""}
 : ${cloudflare_cert:=""}
 
 pidfile="${cloudflare_data_dir}/cloudflare.pid"
 command="/usr/sbin/daemon"
-cloudflare_command="/usr/local/cloudflare/cloudflared tunnel --url ${cloudflare_url} --hostname ${cloudflare_hostname} --origincert ${cloudflare_cert}"
+cloudflare_command="/usr/local/cloudflare/cloudflared tunnel --config ${cloudflare_config} --origincert ${cloudflare_cert}"
 command_args="-P ${pidfile} -r -f ${cloudflare_command}"
 
 load_rc_config $name
