@@ -19,7 +19,7 @@ cat <<EOF >/tmp/pkglist.json
 		"devel/git",
 		"ffmpeg",
 		"go",
-		"perl5",
+		"jq",
 		"plexmediaserver-plexpass",
 		"wget"
 	]
@@ -49,6 +49,11 @@ find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
 awk 'BEGIN { print "#!/bin/sh" } { print }' \
 	< "$ABS_DIR/cloudflare/rc" \
 	> "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/etc/rc.d/cloudflare"
+
+TOOLS_DIR="$SETTINGS_PATH/tools" && \
+	export TOOLS_DIR
+iocage exec "$JAIL_NAME" "mkdir -p $TOOLS_DIR"
+cp "$ABS_DIR/{update,healthcheck}" "$TOOLS_DIR"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	fetch -o /usr/local/bin/plex_updater https://git.io/Jeuy8
