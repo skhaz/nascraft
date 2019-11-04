@@ -10,7 +10,7 @@ JAIL_IP=192.168.1.20 && \
 
 zfs create -o recordsize=64K tank/apps/"$JAIL_NAME"
 
-cat <<EOF >/tmp/pkglist.json
+cat <<-EOF >"$PKG_JSON"
 {
 	"packagesite": "http://pkg.cdn.trueos.org/iocage/unstable",
 	"pkgs": [
@@ -26,9 +26,7 @@ cat <<EOF >/tmp/pkglist.json
 }
 EOF
 
-trap "rm /tmp/pkglist.json" EXIT
-
-iocage create -r "$RELEASE" -n "$JAIL_NAME" -p /tmp/pkglist.json \
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 	vnet="$VNET" \
 	boot="$BOOT" \
 	defaultrouter="$ROUTER" \

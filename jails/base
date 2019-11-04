@@ -17,6 +17,11 @@ SETTINGS_PATH=/mnt/tank/apps/"$JAIL_NAME" && \
 ABS_DIR=$(cd "$(dirname "$0")" || exit; pwd -P) && \
 	export ABS_DIR
 
+PKG_JSON="/tmp/pkglist.json" && \
+	export PKG_JSON
+
+trap 'rm -f "$PKG_JSON" || true' EXIT
+
 github_release() {
 	local release="${3-latest}"
 
