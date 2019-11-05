@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+set -x
+
+
+cat <<-EOF >"$PKG_JSON"
+{
+	"pkgs": [
+		"atomicparsley",
+		"bash",
+		"ffmpeg",
+		"ca_root_nss",
+		"python36",
+		"py36-sqlite3",
+		"py36-openssl"
+	]
+}
+EOF
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	bpf=yes \
+	dhcp=on
+
+iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
+	python3.6 -Im ensurepip --upgrade --default-pip
+
+cp "$ABS_DIR/download" "/mnt/tank/apps/$JAIL_NAME/root/usr/local/bin"
+
+iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
+iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
+iocage exec "$JAIL_NAME" "pip install --upgrade pip youtube_dl"
+iocage exec "$JAIL_NAME" "(crontab -l ; echo '@daily /usr/local/bin/pip install -U youtube_dl') | sort - | uniq - | crontab -"
+iocage exec "$JAIL_NAME" "mkdir -p /mnt/media/youtube && chown -R media:media /mnt/media/youtube"
+

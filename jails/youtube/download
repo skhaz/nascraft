@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+YDL=/usr/local/bin/youtube-dl
+URL=${1?}
+USER=media
+
+alias run=su -m "$USER" -c
+
+declare -a ARGS=(
+	--ignore-config
+	--embed-thumbnail
+	--add-metadata
+	--merge-output-format mp4
+	--format "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio"
+	--output "/mnt/media/youtube/%(uploader)s/%(title)s.%(ext)s"
+)
+
+run "LC_ALL=en_US.UTF-8 $YDL" "${ARGS[@]}" "$URL"
+
