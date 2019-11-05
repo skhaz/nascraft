@@ -26,5 +26,6 @@ iocage exec "$JAIL_NAME" pip install gphotos-sync
 iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/share"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+
 EOF
 
