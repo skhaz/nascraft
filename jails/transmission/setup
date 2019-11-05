@@ -15,7 +15,7 @@ fi
 
 devfs rule -s 4 add path 'tun*' unhide
 
-zfs create -o recordsize=32K tank/apps/"$JAIL_NAME"
+zfs create -o tank/apps/"$JAIL_NAME"
 
 cat <<-EOF >"$PKG_JSON"
 {

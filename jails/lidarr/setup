@@ -8,7 +8,7 @@ set -x
 JAIL_IP=192.168.1.30 && \
 	export JAIL_IP
 
-zfs create -o recordsize=128K tank/apps/"$JAIL_NAME"
+zfs create -o tank/apps/"$JAIL_NAME"
 
 cat <<-EOF >"$PKG_JSON"
 {
