@@ -8,7 +8,7 @@ set -x
 JAIL_IP=192.168.1.20 && \
 	export JAIL_IP
 
-zfs create -o tank/apps/"$JAIL_NAME"
+zfs create tank/apps/"$JAIL_NAME"
 
 cat <<-EOF >"$PKG_JSON"
 {
@@ -54,7 +54,7 @@ iocage exec "$JAIL_NAME" "mkdir -p $TOOLS_DIR"
 cp "$ABS_DIR/{update,healthcheck}" "$TOOLS_DIR"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-	fetch -o /usr/local/bin/plex_updater https://git.io/Jeuy8
+	fetch /usr/local/bin/plex_updater https://git.io/Jeuy8
 	chmod u+x /usr/local/bin/plex_updater
 	pw useradd -n cloudflare -d -c wheel /nonexistent -s /usr/sbin/nologin
 	mkdir /usr/local/cloudflare /settings/cloudflare

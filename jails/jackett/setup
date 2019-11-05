@@ -8,7 +8,7 @@ set -x
 JAIL_IP=192.168.1.70 && \
 	export JAIL_IP
 
-zfs create -o tank/apps/"$JAIL_NAME"
+zfs create tank/apps/"$JAIL_NAME"
 
 echo '{ "pkgs": ["mono"] }' > "$PKG_JSON"
 
@@ -22,7 +22,7 @@ iocage exec "$JAIL_NAME" "mkdir -p /settings /usr/local/etc/rc.d"
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
 iocage exec "$JAIL_NAME" "ln -s /usr/local/bin/mono /usr/bin/mono"
-iocage exec "$JAIL_NAME" "fetch $(github_release jackett jackett 20761502) -o /usr/local/share"
+iocage exec "$JAIL_NAME" "fetch $(github_release jackett jackett 20761502) /usr/local/share"
 iocage exec "$JAIL_NAME" "tar -xzvf /usr/local/share/*.tar.gz -C /usr/local/share && rm /usr/local/share/*.tar.gz"
 
 awk 'BEGIN { print "#!/bin/sh" } { print }' \
