@@ -29,7 +29,7 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
 	python3.6 -Im ensurepip --upgrade --default-pip
 
-cp "$ABS_DIR/download" "/mnt/tank/apps/$JAIL_NAME/root/usr/local/bin"
+cp "$ABS_DIR/download" "/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/bin"
 
 iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
 iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
