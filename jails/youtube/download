@@ -2,7 +2,8 @@
 
 YDL=/usr/local/bin/youtube-dl
 
-URL=${1?}
+ARG1=${1?}
+ARG2=${1?}
 
 declare -a ARGS=(
 	--ignore-config
@@ -11,7 +12,7 @@ declare -a ARGS=(
 	--add-metadata
 	--merge-output-format mp4
 	--format "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio"
-	--output "/mnt/media/youtube/%(uploader)s/%(title)s.%(ext)s"
+	--output "/mnt/media/$ARG2/%(uploader)s/%(title)s.%(ext)s"
 )
 
-LC_ALL=en_US.UTF-8 "$YDL" "${ARGS[@]}" "$URL"
+LC_ALL=en_US.UTF-8 "$YDL" "${ARGS[@]}" "$ARG1"
