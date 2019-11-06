@@ -12,7 +12,6 @@ zfs create tank/apps/"$JAIL_NAME"
 
 cat <<-EOF >"$PKG_JSON"
 {
-	"packagesite": "http://pkg.cdn.trueos.org/iocage/unstable",
 	"pkgs": [
 		"bash",
 		"ca_root_nss",
@@ -35,8 +34,7 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n media"
 iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
 iocage exec "$JAIL_NAME" "go get -u github.com/cloudflare/cloudflared/cmd/cloudflared"
-iocage exec "$JAIL_NAME" "(crontab -l ; echo '@daily /usr/local/bin/plex_updater -vv -a') | sort - | uniq - | crontab -"
-iocage exec "$JAIL_NAME" mkdir -p /settings /mnt/media/{movies,music,series}
+iocage exec "$JAIL_NAME" mkdir -p /settings /mnt/media/{concerts,kids,movies,music,photos,series,youtube}
 
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
@@ -54,8 +52,6 @@ iocage exec "$JAIL_NAME" "mkdir -p $TOOLS_DIR"
 cp "$ABS_DIR/{update,healthcheck}" "$TOOLS_DIR"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-	fetch /usr/local/bin/plex_updater https://git.io/Jeuy8
-	chmod u+x /usr/local/bin/plex_updater
 	pw useradd -n cloudflare -d -c wheel /nonexistent -s /usr/sbin/nologin
 	mkdir /usr/local/cloudflare /settings/cloudflare
 	cp /root/go/bin/cloudflared /usr/local/cloudflare/

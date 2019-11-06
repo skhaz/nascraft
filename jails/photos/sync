@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+GPS=/usr/local/bin/gphotos-sync
+
+HOME="${1?}"
+
+declare -a ARGS=(
+	--retry-download
+	--max-threads 4
+	--secret /settings/secret.json
+)
+
+(cd /mnt/media || exit; LC_ALL=en_US.UTF-8 "$GPS" "${ARGS[@]}" "$HOME")
+

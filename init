@@ -9,11 +9,12 @@ zfs set compression=on tank/apps
 zfs create tank/media
 zfs set compression=off tank/media
 zfs set recordsize=1M tank/media
+zfs create tank/media/concerts
 zfs create tank/media/kids
 zfs create tank/media/movies
 zfs create tank/media/music
+zfs create tank/media/photos
 zfs create tank/media/series
-zfs create tank/media/shows
 zfs create tank/media/youtube
 
 find /mnt/tank/media -type d -print0 | xargs -0 -I % sh -c "chmod 664 %; chown media:media %"
