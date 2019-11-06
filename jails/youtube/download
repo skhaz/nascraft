@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 YDL=/usr/local/bin/youtube-dl
-
 ARG1=${1?}
 ARG2=${1?}
 
