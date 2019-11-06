@@ -35,5 +35,11 @@ iocage exec "$JAIL_NAME" "pw groupadd -g $(getent group media | cut -d: -f3) -n 
 iocage exec "$JAIL_NAME" "pw user add media -c media -u $(id -u media) -d /nonexistent -s /usr/bin/nologin"
 iocage exec "$JAIL_NAME" "pip install --upgrade pip youtube_dl"
 iocage exec "$JAIL_NAME" "(crontab -l ; echo '@daily /usr/local/bin/pip install -U youtube_dl') | sort - | uniq - | crontab -"
-iocage exec "$JAIL_NAME" "mkdir -p /mnt/media/youtube && chown -R media:media /mnt/media/youtube"
+
+iocage exec "$JAIL_NAME" mkdir -p /mnt/media/{movies,music,series,shows,youtube}
+iocage exec "$JAIL_NAME" chown -R media:media /mnt/media
+
+# shellcheck disable=SC2016
+find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
+	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/media/"'"$(basename @)"'" nullfs rw 0 0"
 
