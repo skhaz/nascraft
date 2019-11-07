@@ -5,7 +5,7 @@
 
 zfs create -o tank/apps/"$JAIL_NAME"
 
-echo '{ "pkgs": [ "python36", "py36-sqlite3", "py36-openssl" }' > "$PKG_JSON"
+echo '{ "pkgs": [ "bash" }' > "$PKG_JSON"
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 	vnet="$VNET" \
@@ -18,9 +18,6 @@ iocage exec "$JAIL_NAME" mkdir -p /settings
 
 iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
 
-iocage exec "$JAIL_NAME" env ASSUME_ALWAYS_YES=YES \
-	python3.6 -Im ensurepip --upgrade --default-pip
-iocage exec "$JAIL_NAME" pip install gphotos-sync
 iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/share"
 
 cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
