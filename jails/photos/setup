@@ -3,8 +3,6 @@
 # shellcheck source=/dev/null
 . jails/base
 
-set -x
-
 zfs create tank/apps/"$JAIL_NAME"
 
 cat <<-EOF >"$PKG_JSON"

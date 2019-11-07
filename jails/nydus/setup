@@ -3,8 +3,6 @@
 # shellcheck source=/dev/null
 . jails/base
 
-set -x
-
 zfs create -o tank/apps/"$JAIL_NAME"
 
 echo '{ "pkgs": [ "python36", "py36-sqlite3", "py36-openssl" }' > "$PKG_JSON"

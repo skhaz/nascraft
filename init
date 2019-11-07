@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 zfs create tank/apps
 zfs set tank/apps
 zfs set compression=on tank/apps

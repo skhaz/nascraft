@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 shopt -s nocasematch
 
 if [[ $(transmission-remote -pt 2>/dev/null) =~ yes ]]; then

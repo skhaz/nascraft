@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 export INTERFACE="vnet0"
 export VNET="on"
 export ROUTER="192.168.1.1"
@@ -17,7 +19,7 @@ SETTINGS_PATH=/mnt/tank/apps/"$JAIL_NAME" && \
 ABS_DIR=$(cd "$(dirname "$0")" || exit; pwd -P) && \
 	export ABS_DIR
 
-PKG_JSON="/tmp/pkglist.json" && \
+PKG_JSON=$(mktemp "/tmp/$JAIL_NAME.XXX") && \
 	export PKG_JSON
 
 trap 'rm -f "$PKG_JSON" || true' EXIT

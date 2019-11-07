@@ -6,6 +6,13 @@ ARG1=${1?}
 
 ARG2=${2?}
 
+ARG3="%(title)s.%(ext)s"
+
+if [[ $ARG1 =~ (play)?list ]]
+then
+	ARG3="%(playlist)s/%(playlist_index)s - $ARG3"
+fi
+
 declare -a ARGS=(
 	--ignore-config
 	--embed-thumbnail
@@ -13,7 +20,7 @@ declare -a ARGS=(
 	--add-metadata
 	--merge-output-format mp4
 	--format "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio"
-	--output "/mnt/media/$ARG2/%(uploader)s/%(title)s.%(ext)s"
+	--output "/mnt/media/$ARG2/%(uploader)s/$ARG3"
 )
 
 LC_ALL=en_US.UTF-8 "$YDL" "${ARGS[@]}" "$ARG1"

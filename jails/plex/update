@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -ex
-
 BASE_URL="plex.tv/api/downloads/5.json?channel=plexpass"
 XML="$(sysrc -n plexmediaserver_plexpass_support_path)/Plex Media Server/Preferences.xml"
 API="$BASE_URL&X-Plex-Token=$(xmllint --xpath "string(//Preferences/@PlexOnlineToken)" "$XML")"

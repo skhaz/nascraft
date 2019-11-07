@@ -3,8 +3,6 @@
 # shellcheck source=/dev/null
 . jails/base
 
-set -x
-
 JAIL_IP=192.168.1.30 && \
 	export JAIL_IP
 

@@ -7,6 +7,8 @@ HOME="${1?}"
 declare -a ARGS=(
 	--retry-download
 	--max-threads 4
+	--photos-path .
+	--albums-path .
 	--secret /settings/secret.json
 )
 
