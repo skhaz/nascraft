@@ -2,9 +2,9 @@
 
 YDL=/usr/local/bin/youtube-dl
 
-ARG1=${1?}
+ARG1="${1?}"
 
-ARG2=${2?}
+ARG2="${2?youtube}"
 
 ARG3="%(title)s.%(ext)s"
 
