@@ -14,10 +14,12 @@ then
 fi
 
 declare -a ARGS=(
+	--continue
 	--ignore-config
 	--embed-thumbnail
 	--no-check-certificate
 	--add-metadata
+	--retries infinite
 	--merge-output-format mp4
 	--format "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio"
 	--output "/mnt/media/$ARG2/%(uploader)s/$ARG3"
