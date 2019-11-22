@@ -3,9 +3,9 @@
 # shellcheck source=/dev/null
 . jails/base
 
-zfs create -o tank/apps/"$JAIL_NAME"
+zfs create tank/apps/"$JAIL_NAME"
 
-echo '{ "pkgs": [ "bash" }' > "$PKG_JSON"
+echo '{ "pkgs": [ "ca_root_nss" ] }' > "$PKG_JSON"
 
 iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 	vnet="$VNET" \
@@ -14,13 +14,13 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 	bpf=yes \
 	dhcp=on
 
-iocage exec "$JAIL_NAME" mkdir -p /settings
+iocage exec "$JAIL_NAME" mkdir -p /mnt/backup /usr/local/bin
+iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/bin/duplicacy"
 
-iocage fstab -a "$JAIL_NAME" "$SETTINGS_PATH" /settings nullfs rw 0 0
-
-iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/share"
-
-cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
-
+cat <<-EOF >"/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/bin/backup"
+	#!/bin/sh
+	pgrep -cx duplicacy || duplicacy backup -threads 1 -stats
 EOF
 
+iocage exec "$JAIL_NAME" "(crontab -l; echo '@hourly /usr/local/bin/backup') | sort - | uniq - | crontab -"
+iocage exec "$JAIL_NAME" "chmod u+x chmod /usr/local/bin/*"
