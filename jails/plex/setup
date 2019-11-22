@@ -43,7 +43,7 @@ find /mnt/tank/media/* -type d -maxdepth 0 -print0 \
 
 iocage exec "$JAIL_NAME" "mkdir -p /var/service/plex"
 
-cat <<-EOF >/mnt/tank/iocage/jails/"$JAIL_NAME"/root/var/service/plex/run
+cat <<-EOF >"/mnt/tank/iocage/jails/$JAIL_NAME/root/var/service/plex/run"
 	#!/usr/local/bin/bash
 
 	plexmediaserver_plexpass_support_path="/settings"
