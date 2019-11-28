@@ -46,28 +46,28 @@ iocage exec "$JAIL_NAME" "mkdir -p /var/service/plex"
 cat <<-EOF >"/mnt/tank/iocage/jails/$JAIL_NAME/root/var/service/plex/run"
 	#!/usr/local/bin/bash
 
-	plexmediaserver_plexpass_support_path="/settings"
-	plexmediaserver_plexpass_user="media"
-	plexmediaserver_plexpass_group="media"
-	plexmediaserver_plexpass_maxplugins=6
-
-	export SUPPORT_PATH="${plexmediaserver_plexpass_support_path}"
-	export HOME="${plexmediaserver_plexpass_support_path}/Plex Media Server"
+	export SUPPORT_PATH=/settings
+	export HOME="${SUPPORT_PATH}/Plex Media Server"
 	export PYTHONHOME="/usr/local/share/plexmediaserver-plexpass/Resources/Python"
 	export SCRIPTPATH="/usr/local/share/plexmediaserver-plexpass"
 	export LD_LIBRARY_PATH="/usr/local/lib/compat:${SCRIPTPATH}"
+
+	export PLEX_MEDIA_SERVER_INFO_VENDOR=FreeBSD
+	export PLEX_MEDIA_SERVER_INFO_DEVICE=PC
+	export PLEX_MEDIA_SERVER_INFO_MODEL="$(uname -m)"
+	export PLEX_MEDIA_SERVER_INFO_PLATFORM_VERSION="$(uname -r)"
 	export PLEX_MEDIA_SERVER_HOME="${SCRIPTPATH}"
-	export PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=${plexmediaserver_plexpass_maxplugins}
-	export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=${plexmediaserver_plexpass_support_path}
-	export PLEX_MEDIA_SERVER_PIDFILE=${pidfile}
-	export PLEX_MEDIA_SERVER_LOG_DIR="${plexmediaserver_plexpass_support_path}/Plex Media Server/Logs"
+	export PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=6
+	export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=${SUPPORT_PATH}
+	export PLEX_MEDIA_SERVER_PIDFILE=/var/run/plex/plex.pid
+	export PLEX_MEDIA_SERVER_LOG_DIR="${HOME}/Logs"
 	export PATH="${SCRIPTPATH}/Resources/Python/bin:${PATH}"
 	export LC_ALL="en_US.UTF-8"
 	export LANG="en_US.UTF-8"
 
 	ulimit -s 3000
 
-	/usr/local/share/plexmediaserver-plexpass/Plex_Media_Server
+	exec setuidgid media /usr/local/share/plexmediaserver-plexpass/Plex_Media_Server
 EOF
 
 awk 'BEGIN { print "#!/bin/sh" } { print }' \

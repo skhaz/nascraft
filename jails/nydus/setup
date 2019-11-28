@@ -15,12 +15,13 @@ iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
 	dhcp=on
 
 iocage exec "$JAIL_NAME" mkdir -p /mnt/backup /usr/local/bin
-iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/bin/duplicacy"
 
 cat <<-EOF >"/mnt/tank/iocage/jails/$JAIL_NAME/root/usr/local/bin/backup"
 	#!/bin/sh
+
 	pgrep -cx duplicacy || duplicacy backup -threads 1 -stats
 EOF
 
+iocage exec "$JAIL_NAME" "fetch $(github_release gilbertchen duplicacy) -o /usr/local/bin/duplicacy"
 iocage exec "$JAIL_NAME" "(crontab -l; echo '@hourly /usr/local/bin/backup') | sort - | uniq - | crontab -"
 iocage exec "$JAIL_NAME" "chmod u+x chmod /usr/local/bin/*"

@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/usr/bin/env bash
 
 TARGET=localhost
 CURL_OPTS="--connect-timeout 30 --silent --show-error --fail"
