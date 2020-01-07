@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+JAIL_IP=192.168.1.60 && \
+	export JAIL_IP
+
+zfs create tank/apps/"$JAIL_NAME"
+
+cat <<-EOF >"$PKG_JSON"
+{
+	"pkgs": [
+		"autoconf",
+		"automake",
+		"bash",
+		"bison",
+		"dehydrated",
+		"ffmpeg",
+		"imagemagick7-nox11",
+		"libffi",
+		"libidn",
+		"libxml2",
+		"libxslt",
+		"libyaml",
+		"ncurses",
+		"nginx",
+		"node",
+		"npm",
+		"openssl",
+		"pkgconf",
+		"postgresql12-client",
+		"postgresql12-contrib",
+		"postgresql12-server",
+		"protobuf",
+		"python",
+		"readline",
+		"redis",
+		"ruby",
+		"ruby-gems",
+		"sudo",
+		"yarn"
+	]
+}
+EOF
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	ip4_addr="$INTERFACE|$JAIL_IP/24"
+
