@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+zfs create tank/apps/"$JAIL_NAME"
+
+echo '{ "pkgs": [ "syncthing", "xmlstarlet" ] }' > "$PKG_JSON"
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	bpf=yes \
+	dhcp=on
+
+iocage exec "$JAIL_NAME" "mkdir -p /mnt/syncthing"
+
+iocage fstab -a "$JAIL_NAME" "/mnt/tank/vaults/syncthing /mnt/syncthing nullfs rw 0 0"
+
+cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
+	xml edit --inplace --update "/configuration/folder/@path" --value "/mnt/syncthing" /usr/local/etc/syncthing/config.xml
+	chown syncthing:syncthing /var/run/syncthing.pid /mnt/syncthing
+	sysrc syncthing_enable=YES
+	service syncthing start
+EOF
