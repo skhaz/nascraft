@@ -46,6 +46,8 @@ then
 	exit 1
 fi
 
+chmod +x /usr/local/etc/rc.d/plexmediaserver_plexpass
+
 service plexmediaserver_plexpass stop
 
 pushd "$PLEX" || exit
