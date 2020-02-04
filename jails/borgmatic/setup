@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+. jails/base
+
+zfs create tank/apps/"$JAIL_NAME"
+
+echo '{ "pkgs": [ "py37-borgmatic" ] }' > "$PKG_JSON"
+
+iocage create -r "$RELEASE" -n "$JAIL_NAME" -p "$PKG_JSON" \
+	vnet="$VNET" \
+	boot="$BOOT" \
+	defaultrouter="$ROUTER" \
+	bpf=yes \
+	dhcp=on
+
+iocage exec "$JAIL_NAME" "mkdir -p /mnt/vaults /var/lib/backups"
+iocage fstab -a "$JAIL_NAME" "/mnt/tank/vaults /mnt/vaults nullfs rw 0 0"
+
+# shellcheck disable=SC2016
+find /mnt/tank/vaults/* -type d -maxdepth 0 -print0 \
+	| xargs -0 -I@ bash -c "iocage fstab -a $JAIL_NAME @ /mnt/vaults/"'"$(basename @)"'" nullfs rw 0 0"
