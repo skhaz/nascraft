@@ -46,14 +46,9 @@ then
 	exit 1
 fi
 
-chmod +x /usr/local/etc/rc.d/plexmediaserver_plexpass
-
 service plexmediaserver_plexpass stop
 
 pushd "$PLEX" || exit
 rm -rf -- * && cp -a "$TEMP_DIR/PlexMediaServer-$VERSION/." .
 ln -s "lib/libpython2.7.so.1" "libpython2.7.so"
 ln -s "Plex Media Server" "Plex_Media_Server"
-
-service plexmediaserver_plexpass start
-

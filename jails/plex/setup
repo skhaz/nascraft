@@ -50,7 +50,7 @@ cat <<-EOF >"/mnt/tank/iocage/jails/$JAIL_NAME/root/var/service/plex/run"
 	export HOME="${SUPPORT_PATH}/Plex Media Server"
 	export PYTHONHOME="/usr/local/share/plexmediaserver-plexpass/Resources/Python"
 	export SCRIPTPATH="/usr/local/share/plexmediaserver-plexpass"
-	export LD_LIBRARY_PATH="/usr/local/lib/compat:${SCRIPTPATH}"
+	# export LD_LIBRARY_PATH="/usr/local/lib/compat:${SCRIPTPATH}"
 
 	export PLEX_MEDIA_SERVER_INFO_VENDOR=FreeBSD
 	export PLEX_MEDIA_SERVER_INFO_DEVICE=PC
@@ -90,5 +90,7 @@ cat <<-EOF | xargs -L1 iocage exec "$JAIL_NAME" > /dev/null 2>&1
 	chgrp -R media /mnt/media
 	chown -R media:media /settings
 	chmod +x /var/service/plex/run
+	echo "csh -cf '/usr/local/bin/svscanboot &'" >> /etc/rc.local
+	rm /usr/local/etc/rc.d/svscan
 EOF
 
