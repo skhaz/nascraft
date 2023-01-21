@@ -26,6 +26,6 @@ for n in {0..9}; do
 	then
 		break
 	else
-		sleep $n
+		sleep "$n"
 	fi
 done
