@@ -10,7 +10,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Run Shellcheck
       run: |
-        find . -type f -not -path '*/\.*' -exec grep -Eq '^#!(.*/|.*env +)(sh|bash|ksh)' {} \; -print |
+        find . -type f -not -path '*/\.*' -exec grep -Eq '^#!(.*/|.*env +)(sh|bash|ksh|zsh)' {} \; -print |
           while IFS="" read -r file
           do
             shellcheck "$file"
