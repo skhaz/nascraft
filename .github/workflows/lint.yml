@@ -1,0 +1,17 @@
+name: Shellcheck
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Run Shellcheck
+      run: |
+        find . -type f -not -path '*/\.*' -exec grep -Eq '^#!(.*/|.*env +)(sh|bash|ksh)' {} \; -print |
+          while IFS="" read -r file
+          do
+            shellcheck "$file"
+          done
